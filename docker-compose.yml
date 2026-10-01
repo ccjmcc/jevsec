@@ -1,0 +1,14 @@
+services:
+  security-engine:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      SDE_DATABASE: /data/security.db
+      SDE_DECISION_PROVIDER: ${SDE_DECISION_PROVIDER:-local_jev}
+      LOCAL_JEV_BASE_URL: ${LOCAL_JEV_BASE_URL:-http://host.docker.internal:8765}
+      LOCAL_JEV_MODEL: ${LOCAL_JEV_MODEL:-nli-deberta-large}
+    volumes:
+      - security-data:/data
+volumes:
+  security-data:

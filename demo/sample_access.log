@@ -1,0 +1,27 @@
+203.0.113.10 - - [01/Oct/2026:09:00:01 +0800] "GET / HTTP/1.1" 200 1024 "-" "Mozilla/5.0 Demo" 0.012
+203.0.113.10 - - [01/Oct/2026:09:00:03 +0800] "GET /products HTTP/1.1" 200 2048 "-" "Mozilla/5.0 Demo" 0.019
+203.0.113.10 - - [01/Oct/2026:09:00:05 +0800] "GET /assets/app.js HTTP/1.1" 200 4096 "-" "Mozilla/5.0 Demo" 0.007
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/01 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/02 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/03 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/04 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/05 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/06 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/07 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/08 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/09 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/10 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/11 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/12 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/13 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/14 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/15 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+198.51.100.23 - - [01/Oct/2026:09:01:01 +0800] "GET /synthetic-probe/16 HTTP/1.1" 404 180 "-" "SyntheticScanner/0.1" 0.008
+192.0.2.40 - - [01/Oct/2026:09:02:01 +0800] "POST /login HTTP/1.1" 401 210 "-" "Mozilla/5.0 Demo" 0.032
+192.0.2.40 - - [01/Oct/2026:09:02:02 +0800] "POST /login HTTP/1.1" 401 210 "-" "Mozilla/5.0 Demo" 0.028
+192.0.2.40 - - [01/Oct/2026:09:02:03 +0800] "POST /login HTTP/1.1" 401 210 "-" "Mozilla/5.0 Demo" 0.030
+192.0.2.40 - - [01/Oct/2026:09:02:04 +0800] "POST /login HTTP/1.1" 401 210 "-" "Mozilla/5.0 Demo" 0.030
+192.0.2.40 - - [01/Oct/2026:09:02:05 +0800] "POST /login HTTP/1.1" 401 210 "-" "Mozilla/5.0 Demo" 0.030
+192.0.2.40 - - [01/Oct/2026:09:02:06 +0800] "POST /login HTTP/1.1" 401 210 "-" "Mozilla/5.0 Demo" 0.030
+192.0.2.40 - - [01/Oct/2026:09:02:07 +0800] "POST /login HTTP/1.1" 200 210 "-" "Mozilla/5.0 Demo" 0.030
+192.0.2.40 - - [01/Oct/2026:09:02:08 +0800] "GET /admin HTTP/1.1" 200 900 "-" "Mozilla/5.0 Demo" 0.041

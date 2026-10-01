@@ -1,0 +1,36 @@
+{
+  "model": "nli-deberta-large",
+  "cases": 3,
+  "same_aggregate_features": true,
+  "same_decision": true,
+  "raw_user_agent_sent": false,
+  "results": {
+    "ordinary": {
+      "model": "nli-deberta-large",
+      "malicious_probability": 0.411,
+      "category": "possible_web_exploitation",
+      "severity": 2,
+      "review_probability": 0.205,
+      "confidence": 0.075,
+      "latency_ms": 5852.607667000484
+    },
+    "odd": {
+      "model": "nli-deberta-large",
+      "malicious_probability": 0.411,
+      "category": "possible_web_exploitation",
+      "severity": 2,
+      "review_probability": 0.205,
+      "confidence": 0.075,
+      "latency_ms": 2893.6223749997225
+    },
+    "prompt_like": {
+      "model": "nli-deberta-large",
+      "malicious_probability": 0.411,
+      "category": "possible_web_exploitation",
+      "severity": 2,
+      "review_probability": 0.205,
+      "confidence": 0.075,
+      "latency_ms": 2874.7101670005577
+    }
+  }
+}

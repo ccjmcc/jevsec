@@ -1,0 +1,11 @@
+database: data/security.db
+decision:
+  provider: local_jev
+  base_url: http://127.0.0.1:8765
+  model: llm-qwen3-4b
+mode: hybrid
+thresholds:
+  alert: 55
+  high_risk: 78
+  low_confidence: 0.52
+windows_minutes: [1, 5]
