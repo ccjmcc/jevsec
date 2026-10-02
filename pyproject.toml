@@ -5,8 +5,9 @@ build-backend = "hatchling.build"
 [project]
 name = "security-decision-engine"
 version = "0.2.0"
-description = "Self-hosted AI security decision engine for behavior-based web threat triage"
+description = "Self-hosted behavioral security triage powered by local Qwen3-4B"
 requires-python = ">=3.12"
+keywords = ["security", "waf", "behavioral-analysis", "qwen3", "local-ai", "nginx", "shadow-mode"]
 dependencies = [
   "fastapi>=0.115,<1",
   "uvicorn[standard]>=0.30,<1",
@@ -28,3 +29,10 @@ packages = ["src/security_engine"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
+
+[project.urls]
+Homepage = "https://www.easytool.me/jevsec/"
+Repository = "https://github.com/ccjmcc/jevsec"
+Documentation = "https://github.com/ccjmcc/jevsec#readme"
+Issues = "https://github.com/ccjmcc/jevsec/issues"
