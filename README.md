@@ -4,7 +4,7 @@
 
 > Traditional WAFs inspect requests. **JevSec analyzes behavior across requests.**
 
-![JevSec dashboard](docs/media/dashboard.jpg)
+![JevSec benchmark](docs/media/benchmark.svg)
 
 ## Latest semi-real benchmark
 
