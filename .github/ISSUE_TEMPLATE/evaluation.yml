@@ -1,0 +1,45 @@
+name: Benchmark or detection feedback
+description: Report a false positive, false negative, benchmark concern, or behavior class JevSec should evaluate.
+title: "[Evaluation] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use synthetic or scrubbed data only. Do not post credentials, live cookies, Authorization values, customer data, or raw sensitive logs.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Feedback type
+      options:
+        - False positive
+        - False negative
+        - Benchmark methodology
+        - Missing behavior class
+        - Calibration / threshold behavior
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario
+      description: Describe the behavior at a high level using scrubbed or synthetic data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: JevSec version or commit
