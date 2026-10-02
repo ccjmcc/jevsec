@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<9", "pytest-asyncio>=0.24,<1"]
+dev = ["pytest>=8,<9", "pytest-asyncio>=0.24,<2"]
 
 [project.scripts]
 security-engine = "security_engine.cli:app"
