@@ -1,0 +1,14 @@
+flowchart LR
+  A[Nginx / JSONL logs] --> B[Parser and privacy normalization]
+  B --> C[IP, session, pseudonymous user windows]
+  C --> D[Historical baseline features]
+  D --> E[Explainable rule prefilter]
+  E --> F[Allowlisted context builder]
+  F --> G[Local Jev-compatible System-One]
+  E --> H[Rule score]
+  G --> I[Validation-fitted category calibration]
+  H --> I
+  I --> J[BENIGN / REVIEW / HIGH_RISK / UNCERTAIN]
+  J --> K[Local SQLite and Dashboard]
+  K --> L[Analyst feedback]
+  L -. reviewed for future calibration .-> I

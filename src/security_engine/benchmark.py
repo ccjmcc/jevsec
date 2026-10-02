@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .aggregation import aggregate
+from .config import SUPPORTED_MODEL
 from .decision import DecisionProvider, LocalJevProvider, MockProvider
 from .models import SecurityEvent
 from .risk import assess
@@ -55,6 +56,8 @@ def _splits(labels_file: Path) -> dict[str, dict[str, tuple[str, str]]]:
 
 
 async def run_benchmark(data_dir: Path, report_dir: Path, provider_name="mock", model="llm-qwen3-4b", base_url="http://127.0.0.1:8765", sample_limit=120):
+    if provider_name == "local_jev" and model != SUPPORTED_MODEL:
+        raise ValueError(f"JevSec supports only {SUPPORTED_MODEL}")
     events_path, labels_path = data_dir / "events.jsonl", data_dir / "labels.csv"
     events = [SecurityEvent.model_validate_json(line) for line in events_path.open() if line.strip()]
     labels = _splits(labels_path)

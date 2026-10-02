@@ -7,10 +7,10 @@ from .risk import assess
 from .rules import evaluate_rules
 
 
-async def analyze(events, provider: DecisionProvider | None = None, mode: str = "hybrid", windows=(1, 5), known_sources=None, active_windows=None) -> list[Assessment]:
+async def analyze(events, provider: DecisionProvider | None = None, mode: str = "hybrid", windows=(1, 5), known_sources=None, active_windows=None, baseline_events=None) -> list[Assessment]:
     output = []
     for minutes in windows:
-        for group in aggregate(events, minutes, known_sources=known_sources):
+        for group in aggregate(events, minutes, known_sources=known_sources, baseline_events=baseline_events):
             if active_windows is not None and (group["entity_type"], group["entity"], group["window"], group["started_at"]) not in active_windows:
                 continue
             matches, rule_risk = evaluate_rules(group["features"])

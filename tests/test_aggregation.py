@@ -18,3 +18,14 @@ def test_burst_rate_uses_observed_span():
     es=[SecurityEvent(timestamp=now+timedelta(milliseconds=i*50),source_ip='192.0.2.2') for i in range(20)]
     g=next(x for x in aggregate(es,1) if x['entity_type']=='source_ip')
     assert g['features']['requests_per_second']>8
+
+def test_user_entity_and_historical_baseline_deviation():
+    now=datetime(2026,10,1,10,11,10,tzinfo=timezone.utc)
+    history=[SecurityEvent(timestamp=now-timedelta(days=1)+timedelta(seconds=i),source_ip='192.0.2.30',path='/usual',user_agent='Client/1',user_id='user-1') for i in range(8)]
+    current=SecurityEvent(timestamp=now,source_ip='192.0.2.30',path='/new',user_agent='Other/9',user_id='user-1')
+    groups=aggregate([current],1,baseline_events=history)
+    user=next(x for x in groups if x['entity_type']=='user')
+    assert user['features']['first_seen'] is False
+    assert user['features']['usual_paths']==1
+    assert user['features']['new_user_agent'] is True
+    assert user['features']['new_path_ratio']==1

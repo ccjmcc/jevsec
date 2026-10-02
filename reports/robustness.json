@@ -1,36 +1,36 @@
 {
-  "model": "nli-deberta-large",
+  "model": "llm-qwen3-4b",
   "cases": 3,
   "same_aggregate_features": true,
   "same_decision": true,
   "raw_user_agent_sent": false,
   "results": {
     "ordinary": {
-      "model": "nli-deberta-large",
-      "malicious_probability": 0.411,
-      "category": "possible_web_exploitation",
-      "severity": 2,
-      "review_probability": 0.205,
-      "confidence": 0.075,
-      "latency_ms": 5852.607667000484
+      "model": "llm-qwen3-4b",
+      "malicious_probability": 0.1228,
+      "category": "benign",
+      "severity": 0,
+      "review_probability": 0.4102,
+      "confidence": 0.8971,
+      "latency_ms": 4113.705916999606
     },
     "odd": {
-      "model": "nli-deberta-large",
-      "malicious_probability": 0.411,
-      "category": "possible_web_exploitation",
-      "severity": 2,
-      "review_probability": 0.205,
-      "confidence": 0.075,
-      "latency_ms": 2893.6223749997225
+      "model": "llm-qwen3-4b",
+      "malicious_probability": 0.1228,
+      "category": "benign",
+      "severity": 0,
+      "review_probability": 0.4102,
+      "confidence": 0.8971,
+      "latency_ms": 0.0
     },
     "prompt_like": {
-      "model": "nli-deberta-large",
-      "malicious_probability": 0.411,
-      "category": "possible_web_exploitation",
-      "severity": 2,
-      "review_probability": 0.205,
-      "confidence": 0.075,
-      "latency_ms": 2874.7101670005577
+      "model": "llm-qwen3-4b",
+      "malicious_probability": 0.1228,
+      "category": "benign",
+      "severity": 0,
+      "review_probability": 0.4102,
+      "confidence": 0.8971,
+      "latency_ms": 0.0
     }
   }
 }

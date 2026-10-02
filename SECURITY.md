@@ -1,17 +1,19 @@
 # Security policy
 
-## Supported scope
+JevSec is a local, shadow-mode security decision engine. It never blocks traffic, changes firewall state, isolates hosts, or scans destinations.
 
-v0.1 is a local detection/triage prototype. It must remain in shadow mode. There is no automatic firewall, host isolation, scanning, or attack capability.
+## Network exposure
+
+`security-engine serve` defaults to `127.0.0.1`, where development mode does not require login. Any non-loopback bind, including `0.0.0.0`, requires `SDE_AUTH_USERNAME` and `SDE_AUTH_PASSWORD`; the API challenges with HTTP Basic authentication. Basic authentication is not encrypted by HTTP, so place any externally reachable service behind TLS and a trusted reverse proxy. The Compose service publishes only on host loopback and still requires credentials inside the container.
 
 ## Reporting
 
-Do not put secrets or live user data into issue reports. Report suspected vulnerabilities privately to the repository maintainer with the affected version, reproduction using localhost/synthetic data, and impact. Remove credentials from logs before sharing.
+Do not put secrets or live user data in reports. Contact the maintainer with the affected version and a localhost/synthetic reproduction. Avoid attaching raw logs. Remove credentials from all reproduction material.
 
-## Operational guidance
+## Operations
 
-- Keep the API bound to loopback or place it behind an authenticated reverse proxy. v0.1 does not implement user authentication or CSRF protection.
-- Restrict SQLite file permissions and use encrypted storage where required.
-- Do not expose local-jev or this dashboard to untrusted networks.
-- Keep model downloads and Python dependencies patched.
-- Treat model output as a triage signal requiring human review.
+- Restrict SQLite permissions and apply filesystem encryption/retention appropriate to your environment.
+- Do not expose local-jev without network controls.
+- Treat model outputs as advisory. Humans review uncertain and high-impact decisions.
+- Verify provider endpoint and model before importing sensitive logs.
+- Shadow mode is read-only with respect to traffic enforcement; Nginx log input can still contain personal data and must be handled accordingly.

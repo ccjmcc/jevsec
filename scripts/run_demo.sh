@@ -2,7 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 JEV_DIR="${LOCAL_JEV_DIR:-$(cd .. && pwd)/.local-jev}"
-MODEL="${LOCAL_JEV_MODEL:-nli-deberta-large}"
+MODEL="${LOCAL_JEV_MODEL:-llm-qwen3-4b}"
+[[ "$MODEL" == "llm-qwen3-4b" ]] || { echo "JevSec supports only llm-qwen3-4b" >&2; exit 2; }
 export SDE_DECISION_PROVIDER="${SDE_DECISION_PROVIDER:-local_jev}"
 export LOCAL_JEV_MODEL="$MODEL"
 uv sync --all-extras --python 3.12 >/dev/null

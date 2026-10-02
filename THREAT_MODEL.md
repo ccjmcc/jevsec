@@ -1,17 +1,31 @@
 # Threat model
 
+## Purpose and boundaries
+
+JevSec supports local detection and human triage for Nginx/web logs. It is not a WAF, exploit executor, prevention system, or guarantee for unknown vulnerabilities. It is designed for shadow mode.
+
 ## Assets
 
-Access logs, pseudonymous session identifiers, local model availability, assessment integrity, and operator credentials on the host.
+- Local normalized request events and source IPs in SQLite.
+- Pseudonymous user/session/request identifiers.
+- Model endpoint credentials/configuration and downloaded local model weights.
+- Operator feedback and review decisions.
 
-## Adversaries and threats
+## Adversaries and untrusted input
 
-- Remote clients can control request paths, user-agent and referer strings, status patterns, and request timing represented in logs.
-- Prompt-like text can appear in attacker-controlled fields. Raw strings are excluded from provider context; feature names and data types are fixed.
-- Malformed log lines can exhaust parser time or corrupt ingestion; parse failures are counted and skipped.
-- Local users/processes may access the unauthenticated dashboard or SQLite file. Loopback binding and host access controls are required.
-- Model/API failures can delay scoring; a configured timeout and rule-only mode are available.
+Remote clients can choose request paths, query strings, methods, status-triggering behavior, user-agent/referer headers, and potentially remote-user values. These log fields are untrusted. A crafted user-agent may resemble instructions or ask a model to ignore policy; raw attacker text is not included in Jev context. Prompt-injection-like variants are tested by checking identical feature objects and model payload allowlisting.
 
-## Boundaries and residual risk
+Operators can misconfigure the provider URL or expose the dashboard. A compromised host, SQLite file, dependency, or model endpoint is outside the protection provided by application-level normalization.
 
-Aggregation can lose relevant sequence detail, heuristics can flag legitimate crawlers or API clients, and local models can be wrong or overconfident. The dashboard is not an enforcement point. The v0.1 API has no authentication, retention scheduler, signed audit trail, rate limiting, or production isolation. Treat all results as advisory.
+## Controls
+
+- JSON field whitelist and typed schema; secret-bearing and unknown keys are dropped.
+- Query/fragment removal, method allowlisting, valid IP parsing, and pseudonymized session/request/user IDs.
+- Local feature allowlist before model calls; bounded local response cache.
+- Explainable rule evidence, category calibration, uncertainty state, and human feedback.
+- Loopback default; non-loopback binds require Basic-auth credentials. Use TLS termination for any external network.
+- No automatic action against production traffic.
+
+## Residual risks
+
+The model can be wrong, overconfident, or coerced by structured-feature combinations; calibration only reflects the versioned synthetic/operational validation sample. False positives and false negatives remain possible. Local data can expose personal information through paths, IPs and user-agent values. File rotation and retention depend on the operator. Model/provider endpoint compromise can affect decision integrity.

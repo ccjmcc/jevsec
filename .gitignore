@@ -6,6 +6,8 @@ __pycache__/
 *.sqlite*
 data/
 datasets/generated/
+datasets/public_v2/
 benchmarks/results/
 dist/
+.env
 .DS_Store

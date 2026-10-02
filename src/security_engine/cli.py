@@ -15,7 +15,7 @@ from .benchmark import render_report, run_benchmark
 from .aggregation import active_window_keys
 from .config import settings
 from .dataset import generate_dataset
-from .decision import LocalJevProvider, MockProvider
+from .decision import LocalJevProvider, MockProvider, PrefilterProvider
 from .engine import analyze
 from .parser import parse_line
 from .storage import Store
@@ -23,11 +23,20 @@ from .storage import Store
 app = typer.Typer(no_args_is_help=True, help="Self-hosted security behavior detection and triage")
 
 def _provider():
-    return LocalJevProvider(settings.local_jev_base_url, settings.local_jev_model, settings.decision_timeout) if settings.decision_provider == "local_jev" else MockProvider()
+    provider = LocalJevProvider(settings.local_jev_base_url, settings.local_jev_model, settings.decision_timeout) if settings.decision_provider == "local_jev" else MockProvider()
+    return PrefilterProvider(provider) if settings.jev_prefilter and settings.decision_provider == "local_jev" else provider
 
 @app.command()
 def serve(host: str = "127.0.0.1", port: int = 8000):
     """Run the API and dashboard."""
+    if host not in {"127.0.0.1", "localhost", "::1"}:
+        if not os.getenv("SDE_AUTH_USERNAME") or not os.getenv("SDE_AUTH_PASSWORD"):
+            raise typer.BadParameter("non-local bind requires SDE_AUTH_USERNAME and SDE_AUTH_PASSWORD; place the service behind TLS")
+        os.environ["SDE_AUTH_REQUIRED"] = "1"
+        from dataclasses import replace
+        from . import config
+        config.settings = replace(config.settings, auth_required=True,
+                                  auth_username=os.environ["SDE_AUTH_USERNAME"], auth_password=os.environ["SDE_AUTH_PASSWORD"])
     import uvicorn
     uvicorn.run("security_engine.api:app", host=host, port=port, reload=False)
 
@@ -39,6 +48,7 @@ def ingest(path: Path = typer.Argument(..., exists=True, readable=True), format:
     good = bad = assessments = 0
     offset = 0
     parsed = []
+    decision_provider = _provider()
     async def process(lines: list[str]):
         nonlocal good, bad, assessments, parsed
         batch = []
@@ -51,40 +61,73 @@ def ingest(path: Path = typer.Argument(..., exists=True, readable=True), format:
         if not batch:
             return
         known_sources = store.source_ips()
+        baseline_events = store.context_history(batch)
         active = active_window_keys(batch)
         store.add_events(batch)
         good += len(batch)
         parsed.extend(batch)
         five_minute_starts = [start for _, _, window, start in active if window == "5m"]
         start = min(five_minute_starts) if five_minute_starts else min(e.timestamp for e in batch)
-        source = store.recent_events(start, {e.source_ip for e in batch}, {e.session_hash for e in batch if e.session_hash})
-        results = await analyze(source, _provider(), mode, known_sources=known_sources, active_windows=active)
-        for item in results: store.add_assessment(item)
+        source = store.recent_events(start, {e.source_ip for e in batch}, {e.session_hash for e in batch if e.session_hash}, {e.user_id for e in batch if e.user_id})
+        results = await analyze(source, decision_provider, mode, known_sources=known_sources, active_windows=active, baseline_events=baseline_events)
+        for item in results:
+            store.add_assessment(item)
+            if follow:
+                hits = ",".join(rule.rule_id for rule in item.rules) or "none"
+                typer.echo(f"shadow_event entity={item.entity} type={item.entity_type} window={item.window} disposition={item.disposition} risk={item.hybrid_risk:.1f} rule_hits={hits} jev_category={item.jev.category if item.jev else 'not_called'}")
         assessments += len(results)
     with path.open("r", encoding="utf-8", errors="replace") as f:
+        opened_stat = os.fstat(f.fileno())
+        opened_identity = (opened_stat.st_dev, opened_stat.st_ino)
         lines = f.readlines()
         offset = sum(len(x.encode("utf-8", errors="replace")) for x in lines)
-        asyncio.run(process(lines))
-        if follow:
-            pending = []
-            last_flush = time.monotonic()
-            while True:
-                line = f.readline()
-                if line:
-                    pending.append(line)
-                    offset += len(line.encode("utf-8", errors="replace"))
-                elif pending and time.monotonic() - last_flush >= .5:
-                    asyncio.run(process(pending))
-                    pending = []
-                    last_flush = time.monotonic()
-                else:
-                    time.sleep(.25)
+        async def run_loop():
+            nonlocal f, offset, opened_identity
+            await process(lines)
+            if follow:
+                pending = []
+                last_flush = time.monotonic()
+                while True:
+                    line = f.readline()
+                    if line:
+                        pending.append(line)
+                        offset += len(line.encode("utf-8", errors="replace"))
+                    elif pending and time.monotonic() - last_flush >= .5:
+                        if pending[-1].endswith("\n"):
+                            await process(pending)
+                            pending = []
+                        last_flush = time.monotonic()
+                    else:
+                        await asyncio.sleep(.25)
+                    try:
+                        stat = path.stat()
+                        identity = (stat.st_dev, stat.st_ino)
+                        if identity != opened_identity or stat.st_size < f.tell():
+                            f.close()
+                            f = path.open("r", encoding="utf-8", errors="replace")
+                            reopened = os.fstat(f.fileno())
+                            opened_identity = (reopened.st_dev, reopened.st_ino)
+                            offset = 0
+                            pending = []
+                    except (FileNotFoundError, OSError):
+                        await asyncio.sleep(.25)
+            if hasattr(decision_provider, "provider") and hasattr(decision_provider.provider, "aclose"):
+                await decision_provider.provider.aclose()
+            elif hasattr(decision_provider, "aclose"):
+                await decision_provider.aclose()
+        asyncio.run(run_loop())
     typer.echo(f"ingest_complete events={good} parser_errors={bad} assessments={assessments} bytes_read={offset}")
 
 @app.command("generate-dataset")
-def generate(out: Path = typer.Option(Path("datasets/generated"), "--out"), entities: int = typer.Option(1200), seed: int = typer.Option(20261001)):
-    event_path, labels_path = generate_dataset(out, entities, seed)
-    typer.echo(f"generated events={event_path} labels={labels_path} entities={sum(1 for _ in labels_path.open())-1}")
+def generate(out: Path = typer.Option(Path("datasets/generated"), "--out"), behavior_windows: int = typer.Option(20000, "--behavior-windows", "--entities"),
+             seed: int = typer.Option(20261001), malicious_rate: float = typer.Option(.05, min=0, max=1)):
+    event_path, labels_path = generate_dataset(out, behavior_windows, seed, malicious_rate)
+    typer.echo(f"generated behavior_windows={behavior_windows} malicious_rate={malicious_rate:.3%} events={event_path} labels={labels_path}")
+
+@app.command()
+def shadow(nginx: Path = typer.Option(..., "--nginx", exists=True, readable=True), mode: str = typer.Option("hybrid", help="hybrid, rules_only, jev_only")):
+    """Continuously observe an Nginx access log; never blocks or changes network config."""
+    ingest(nginx, format="nginx", follow=True, mode=mode)
 
 @app.command()
 def benchmark(data: Path = typer.Option(Path("datasets/generated"), "--data"), reports: Path = typer.Option(Path("reports"), "--reports"),

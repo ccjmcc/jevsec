@@ -2,13 +2,23 @@ services:
   security-engine:
     build: .
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:${SDE_PORT:-8000}:8000"
     environment:
       SDE_DATABASE: /data/security.db
       SDE_DECISION_PROVIDER: ${SDE_DECISION_PROVIDER:-local_jev}
       LOCAL_JEV_BASE_URL: ${LOCAL_JEV_BASE_URL:-http://host.docker.internal:8765}
-      LOCAL_JEV_MODEL: ${LOCAL_JEV_MODEL:-nli-deberta-large}
+      LOCAL_JEV_MODEL: ${LOCAL_JEV_MODEL:-llm-qwen3-4b}
+      SDE_AUTH_USERNAME: ${SDE_AUTH_USERNAME:?Set SDE_AUTH_USERNAME in .env}
+      SDE_AUTH_PASSWORD: ${SDE_AUTH_PASSWORD:?Set SDE_AUTH_PASSWORD in .env}
     volumes:
       - security-data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import base64,os,urllib.request; u=os.environ['SDE_AUTH_USERNAME']; p=os.environ['SDE_AUTH_PASSWORD']; q=urllib.request.Request('http://127.0.0.1:8000/healthz',headers={'Authorization':'Basic '+base64.b64encode((u+':'+p).encode()).decode()}); urllib.request.urlopen(q,timeout=3).read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
 volumes:
   security-data:

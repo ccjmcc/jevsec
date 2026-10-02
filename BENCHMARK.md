@@ -1,5 +1,3 @@
-# Benchmark entry point
+# Benchmark reports
 
-The reproducible synthetic evaluation and the M5/local-jev measurements are in [reports/BENCHMARK.md](reports/BENCHMARK.md). Per-model held-out metrics are in [reports/local_jev_benchmark.md](reports/local_jev_benchmark.md), with machine-readable results in [reports/local_jev_benchmark.csv](reports/local_jev_benchmark.csv).
-
-Run `./.venv/bin/security-engine generate-dataset --out datasets/generated --entities 1200 --seed 20261001` followed by `./.venv/bin/security-engine benchmark --data datasets/generated --reports reports/local_jev/<model> --provider local_jev --model <model> --sample-limit 70`. The split is entity-disjoint; config thresholds are held fixed and no test labels are used for threshold tuning.
+The current single-model Qwen3-4B behavior-window evaluation is [reports/BENCHMARK_V2.md](reports/BENCHMARK_V2.md). The request-level OWASP CRS comparison is [reports/WAF_COMPARISON.md](reports/WAF_COMPARISON.md). Both reports describe synthetic data, methodology, limitations, and reproduction commands.

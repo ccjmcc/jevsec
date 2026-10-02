@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -21,7 +20,7 @@ VARIANTS = {
 
 
 async def main():
-    provider = LocalJevProvider(settings.local_jev_base_url, os.getenv("LOCAL_JEV_MODEL", "nli-deberta-large"), timeout=1200)
+    provider = LocalJevProvider(settings.local_jev_base_url, settings.local_jev_model, timeout=1200)
     results = {}
     feature_states = []
     for i, (name, agent) in enumerate(VARIANTS.items(), 1):

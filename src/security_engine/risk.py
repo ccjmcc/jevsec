@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .config import settings
 from .models import Assessment, JevDecision, RuleMatch
+from .calibration import calibrate, load_thresholds
 
 
 def assess(*, entity: str, entity_type: str, window: str, started_at, ended_at, request_count: int,
@@ -28,14 +29,13 @@ def assess(*, entity: str, entity_type: str, window: str, started_at, ended_at, 
             # Disagreement raises uncertainty and causes review rather than forced binary classification.
             confidence = max(0, min(1, jev.confidence * context_completeness - abs(rule_risk - float(jev_risk)) / 180))
         category = jev.category if jev and confidence >= settings.low_confidence_threshold else ("unknown_suspicious" if rules else "benign")
-    if confidence < settings.low_confidence_threshold:
-        disposition = "UNCERTAIN"
-    elif score >= settings.high_risk_threshold:
-        disposition = "HIGH_RISK"
-    elif score >= settings.alert_threshold:
-        disposition = "SUSPICIOUS"
+    if mode == "rules_only":
+        disposition = "HIGH_RISK" if score >= settings.high_risk_threshold else "REVIEW" if score >= settings.alert_threshold else "BENIGN"
     else:
-        disposition = "BENIGN"
+        calibrated = calibrate(score, category, load_thresholds(settings.calibration_file, mode), confidence,
+                               settings.low_confidence_threshold, settings.high_risk_threshold)
+        disposition = calibrated.disposition
+        features["calibration_threshold"] = calibrated.threshold
     return Assessment(entity=entity, entity_type=entity_type, window=window, started_at=started_at, ended_at=ended_at,
                       request_count=request_count, features=features, rules=rules, rule_risk=rule_risk, jev=jev,
                       jev_risk=jev_risk, hybrid_risk=round(score, 2), disposition=disposition, category=category,

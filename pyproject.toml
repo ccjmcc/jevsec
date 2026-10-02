@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "security-decision-engine"
-version = "0.1.0"
-description = "Self-hosted AI-assisted security behavior triage in shadow mode"
+version = "0.2.0"
+description = "Self-hosted AI security decision engine for behavior-based web threat triage"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115,<1",

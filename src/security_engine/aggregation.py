@@ -14,10 +14,16 @@ def _ratio(n: int, d: int) -> float:
     return n / d if d else 0.0
 
 
+def _entities(e: SecurityEvent):
+    for item in (("source_ip", e.source_ip), ("session", e.session_hash), ("user", e.user_id)):
+        if item[1]:
+            yield item
+
+
 def active_window_keys(events: Iterable[SecurityEvent], windows=(1, 5)) -> set[tuple[str, str, str, datetime]]:
     active = set()
     for e in events:
-        for entity_type, entity in (("source_ip", e.source_ip), *(([("session", e.session_hash)] if e.session_hash else []))):
+        for entity_type, entity in _entities(e):
             for minutes in windows:
                 start = e.timestamp.replace(second=0, microsecond=0)
                 start = start.replace(minute=(start.minute // minutes) * minutes)
@@ -26,15 +32,18 @@ def active_window_keys(events: Iterable[SecurityEvent], windows=(1, 5)) -> set[t
 
 
 def aggregate(events: Iterable[SecurityEvent], window_minutes: int = 1, now: datetime | None = None,
-              known_sources: set[str] | None = None) -> list[dict]:
+              known_sources: set[str] | None = None, baseline_events: Iterable[SecurityEvent] | None = None) -> list[dict]:
     rows = list(events)
     if not rows:
         return []
     by_entity: dict[tuple[str, str], list[SecurityEvent]] = {}
     for e in rows:
-        by_entity.setdefault(("source_ip", e.source_ip), []).append(e)
-        if e.session_hash:
-            by_entity.setdefault(("session", e.session_hash), []).append(e)
+        for identity in _entities(e):
+            by_entity.setdefault(identity, []).append(e)
+    baselines: dict[tuple[str, str], list[SecurityEvent]] = {}
+    for event in baseline_events or ():
+        for identity in _entities(event):
+            baselines.setdefault(identity, []).append(event)
     out = []
     for (entity_type, entity), entity_events in by_entity.items():
         entity_events.sort(key=lambda e: e.timestamp)
@@ -89,6 +98,30 @@ def aggregate(events: Iterable[SecurityEvent], window_minutes: int = 1, now: dat
                 "enumeration_like_behavior": bool(unique_paths >= 12 and statuses[4] >= 8),
                 "window_minutes": window_minutes,
             }
+            history = [e for e in baselines.get((entity_type, entity), ()) if e.timestamp < start]
+            if history:
+                known_paths = {e.path.lower() for e in history}
+                known_uas = {e.user_agent for e in history if e.user_agent}
+                hours = {e.timestamp.hour for e in history}
+                elapsed_minutes = max(1.0, (history[-1].timestamp - history[0].timestamp).total_seconds() / 60)
+                usual_rpm = len(history) / elapsed_minutes
+                current_rpm = len(subset) / max(1.0, observed_span_seconds / 60)
+                features.update({"first_seen": False, "usual_request_rate": usual_rpm,
+                    "usual_paths": len(known_paths), "usual_hours": sorted(hours),
+                    "usual_user_agents": len(known_uas),
+                    "deviation_from_baseline": min(10.0, abs(current_rpm - usual_rpm) / max(usual_rpm, .1)),
+                    "new_path_ratio": _ratio(sum(p.lower() not in known_paths for p in paths), len(paths)),
+                    "new_user_agent": bool(uas - known_uas),
+                    "unusual_hour": start.hour not in hours,
+                    "usual_auth_pattern": {"failure_rate": _ratio(sum(e.auth_result == "failure" for e in history), len(history)),
+                                           "success_rate": _ratio(sum(e.auth_result == "success" for e in history), len(history))},
+                    "auth_pattern_deviation": abs(_ratio(failures, len(subset)) - _ratio(sum(e.auth_result == "failure" for e in history), len(history)))} )
+            else:
+                features.update({"first_seen": True, "usual_request_rate": 0.0, "usual_paths": 0,
+                    "usual_hours": [], "usual_user_agents": 0, "deviation_from_baseline": 0.0,
+                    "new_path_ratio": 0.0, "new_user_agent": False, "unusual_hour": False,
+                    "usual_auth_pattern": {"failure_rate": 0.0, "success_rate": 0.0},
+                    "auth_pattern_deviation": 0.0})
             out.append({"entity": entity, "entity_type": entity_type, "window": f"{window_minutes}m",
                         "started_at": start, "ended_at": start + timedelta(minutes=window_minutes),
                         "events": subset, "features": features})

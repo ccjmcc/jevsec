@@ -1,0 +1,552 @@
+{
+  "model": "llm-qwen3-4b",
+  "provider": "local_jev",
+  "machine": "macOS-27.0-arm64-arm-64bit",
+  "architecture": "arm64",
+  "hardware_model": "Apple M5",
+  "python": "3.12.13",
+  "local_jev_version": "0.2.0",
+  "model_version": "Qwen3-4B-Instruct-2507; HF snapshot cdbee75f17c01a7cc42f958dc650907174af0554",
+  "dataset_composition": {
+    "train_calibration": {
+      "windows": 12000,
+      "classes": {
+        "reconnaissance": 189,
+        "benign": 10800,
+        "suspicious_post_authentication": 189,
+        "possible_web_exploitation": 197,
+        "unknown_suspicious": 202,
+        "automated_bot": 211,
+        "credential_abuse": 212
+      },
+      "scenarios": {
+        "reconnaissance": 189,
+        "ordinary_browse": 722,
+        "normal_crawler": 737,
+        "search_bot": 726,
+        "api_polling": 726,
+        "health_check": 731,
+        "suspicious_post_authentication": 189,
+        "cdn": 701,
+        "spa_404": 708,
+        "possible_web_exploitation": 197,
+        "unknown_suspicious": 202,
+        "automated_bot": 211,
+        "admin_batch_operation": 731,
+        "development_scan": 716,
+        "monitoring_system": 729,
+        "slow_login_failures": 726,
+        "enterprise_proxy": 708,
+        "high_volume_api": 712,
+        "credential_abuse": 212,
+        "mobile_retry": 716,
+        "ci_cd": 711
+      }
+    },
+    "validation": {
+      "windows": 4000,
+      "classes": {
+        "credential_abuse": 56,
+        "benign": 3600,
+        "automated_bot": 67,
+        "reconnaissance": 81,
+        "possible_web_exploitation": 60,
+        "suspicious_post_authentication": 75,
+        "unknown_suspicious": 61
+      },
+      "scenarios": {
+        "credential_abuse": 56,
+        "ordinary_browse": 242,
+        "normal_crawler": 235,
+        "automated_bot": 67,
+        "search_bot": 233,
+        "api_polling": 247,
+        "health_check": 239,
+        "cdn": 236,
+        "reconnaissance": 81,
+        "admin_batch_operation": 239,
+        "development_scan": 238,
+        "monitoring_system": 236,
+        "slow_login_failures": 243,
+        "enterprise_proxy": 243,
+        "high_volume_api": 238,
+        "mobile_retry": 246,
+        "ci_cd": 244,
+        "spa_404": 241,
+        "possible_web_exploitation": 60,
+        "suspicious_post_authentication": 75,
+        "unknown_suspicious": 61
+      }
+    },
+    "test": {
+      "windows": 4000,
+      "classes": {
+        "benign": 3600,
+        "automated_bot": 55,
+        "unknown_suspicious": 70,
+        "possible_web_exploitation": 76,
+        "reconnaissance": 64,
+        "suspicious_post_authentication": 69,
+        "credential_abuse": 66
+      },
+      "scenarios": {
+        "ordinary_browse": 244,
+        "normal_crawler": 238,
+        "search_bot": 247,
+        "api_polling": 240,
+        "health_check": 242,
+        "cdn": 228,
+        "spa_404": 242,
+        "admin_batch_operation": 248,
+        "development_scan": 237,
+        "monitoring_system": 243,
+        "slow_login_failures": 247,
+        "enterprise_proxy": 242,
+        "automated_bot": 55,
+        "high_volume_api": 230,
+        "mobile_retry": 240,
+        "ci_cd": 232,
+        "unknown_suspicious": 70,
+        "possible_web_exploitation": 76,
+        "reconnaissance": 64,
+        "suspicious_post_authentication": 69,
+        "credential_abuse": 66
+      }
+    }
+  },
+  "windows_evaluated": 4000,
+  "validation_windows": 4000,
+  "test_malicious_prevalence": 0.1,
+  "event_count": 240000,
+  "system_results": {
+    "rules": {
+      "n": 4000,
+      "precision": 1.0,
+      "recall": 0.4975,
+      "f1": 0.664440734557596,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.5025,
+      "accuracy": 0.94975,
+      "auroc": 0.93125,
+      "tp": 199,
+      "fp": 0,
+      "tn": 3600,
+      "fn": 201,
+      "review_rate": 0.04975,
+      "alerts_or_reviews": 199,
+      "attack_retention": 0.4975,
+      "rule_reviews": 199,
+      "alert_reduction": 0.0
+    },
+    "jev": {
+      "n": 4000,
+      "precision": 1.0,
+      "recall": 0.6875,
+      "f1": 0.8148148148148148,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.3125,
+      "accuracy": 0.96875,
+      "auroc": 0.8910173611111111,
+      "tp": 275,
+      "fp": 0,
+      "tn": 3600,
+      "fn": 125,
+      "review_rate": 0.06875,
+      "alerts_or_reviews": 275,
+      "attack_retention": 0.6875,
+      "rule_reviews": 199,
+      "alert_reduction": -0.38190954773869346
+    },
+    "hybrid": {
+      "n": 4000,
+      "precision": 0.5268199233716475,
+      "recall": 0.6875,
+      "f1": 0.5965292841648591,
+      "false_positive_rate": 0.06861111111111111,
+      "false_negative_rate": 0.3125,
+      "accuracy": 0.907,
+      "auroc": 0.8756388888888889,
+      "tp": 275,
+      "fp": 247,
+      "tn": 3353,
+      "fn": 125,
+      "review_rate": 0.1305,
+      "alerts_or_reviews": 522,
+      "attack_retention": 0.6875,
+      "rule_reviews": 199,
+      "alert_reduction": -1.6231155778894473
+    },
+    "prefilter_hybrid": {
+      "n": 4000,
+      "precision": 0.5268199233716475,
+      "recall": 0.6875,
+      "f1": 0.5965292841648591,
+      "false_positive_rate": 0.06861111111111111,
+      "false_negative_rate": 0.3125,
+      "accuracy": 0.907,
+      "auroc": 0.8989375,
+      "tp": 275,
+      "fp": 247,
+      "tn": 3353,
+      "fn": 125,
+      "review_rate": 0.1305,
+      "alerts_or_reviews": 522,
+      "attack_retention": 0.6875,
+      "rule_reviews": 199,
+      "alert_reduction": -1.6231155778894473
+    },
+    "calibrated_jev": {
+      "n": 4000,
+      "precision": 1.0,
+      "recall": 0.6875,
+      "f1": 0.8148148148148148,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.3125,
+      "accuracy": 0.96875,
+      "auroc": 0.8910173611111111,
+      "tp": 275,
+      "fp": 0,
+      "tn": 3600,
+      "fn": 125,
+      "review_rate": 0.06875,
+      "alerts_or_reviews": 275,
+      "attack_retention": 0.6875,
+      "rule_reviews": 199,
+      "alert_reduction": -0.38190954773869346
+    },
+    "calibrated_hybrid": {
+      "n": 4000,
+      "precision": 1.0,
+      "recall": 0.6875,
+      "f1": 0.8148148148148148,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.3125,
+      "accuracy": 0.96875,
+      "auroc": 0.8756388888888889,
+      "tp": 275,
+      "fp": 0,
+      "tn": 3600,
+      "fn": 125,
+      "review_rate": 0.06875,
+      "alerts_or_reviews": 275,
+      "attack_retention": 0.6875,
+      "rule_reviews": 199,
+      "alert_reduction": -0.38190954773869346
+    },
+    "jev_95": {
+      "n": 4000,
+      "precision": 1.0,
+      "recall": 0.6875,
+      "f1": 0.8148148148148148,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.3125,
+      "accuracy": 0.96875,
+      "auroc": 0.8910173611111111,
+      "tp": 275,
+      "fp": 0,
+      "tn": 3600,
+      "fn": 125,
+      "review_rate": 0.06875,
+      "alerts_or_reviews": 275,
+      "attack_retention": 0.6875,
+      "rule_reviews": 199,
+      "alert_reduction": -0.38190954773869346
+    },
+    "hybrid_95": {
+      "n": 4000,
+      "precision": 1.0,
+      "recall": 0.6875,
+      "f1": 0.8148148148148148,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.3125,
+      "accuracy": 0.96875,
+      "auroc": 0.8756388888888889,
+      "tp": 275,
+      "fp": 0,
+      "tn": 3600,
+      "fn": 125,
+      "review_rate": 0.06875,
+      "alerts_or_reviews": 275,
+      "attack_retention": 0.6875,
+      "rule_reviews": 199,
+      "alert_reduction": -0.38190954773869346
+    }
+  },
+  "thresholds": {
+    "model": "llm-qwen3-4b",
+    "calibration_split": "validation",
+    "maximum_validation_fpr": 0.05,
+    "jev_thresholds": {
+      "reconnaissance": {
+        "threshold": 70.75,
+        "validation_n": 3681,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.022004889975550123
+      },
+      "credential_abuse": {
+        "threshold": 89.37,
+        "validation_n": 3656,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.015317286652078774
+      },
+      "automation": {
+        "threshold": 100.000001,
+        "validation_n": 3667,
+        "precision": 0.0,
+        "recall": 0.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.0
+      },
+      "post_authentication_anomaly": {
+        "threshold": 45.51,
+        "validation_n": 3675,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.02040816326530612
+      },
+      "web_exploitation": {
+        "threshold": 60.6,
+        "validation_n": 3660,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.01639344262295082
+      },
+      "unknown_suspicious": {
+        "threshold": 100.000001,
+        "validation_n": 3661,
+        "precision": 0.0,
+        "recall": 0.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.0
+      },
+      "benign": {
+        "threshold": 101.0,
+        "validation_n": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.0
+      }
+    },
+    "hybrid_thresholds": {
+      "reconnaissance": {
+        "threshold": 76.76,
+        "validation_n": 3681,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.022004889975550123
+      },
+      "credential_abuse": {
+        "threshold": 67.03,
+        "validation_n": 3656,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.015317286652078774
+      },
+      "automation": {
+        "threshold": 100.000001,
+        "validation_n": 3667,
+        "precision": 0.0,
+        "recall": 0.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.0
+      },
+      "post_authentication_anomaly": {
+        "threshold": 53.63,
+        "validation_n": 3675,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.02040816326530612
+      },
+      "web_exploitation": {
+        "threshold": 35.51,
+        "validation_n": 3660,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.01639344262295082
+      },
+      "unknown_suspicious": {
+        "threshold": 19.25,
+        "validation_n": 3661,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.01666211417645452
+      },
+      "benign": {
+        "threshold": 101.0,
+        "validation_n": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.0
+      }
+    },
+    "target_recall": 0.95,
+    "jev_min_review_thresholds": {
+      "reconnaissance": {
+        "threshold": 70.75,
+        "validation_n": 3681,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.022004889975550123
+      },
+      "credential_abuse": {
+        "threshold": 89.37,
+        "validation_n": 3656,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.015317286652078774
+      },
+      "automation": {
+        "threshold": 7.92,
+        "validation_n": 3667,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 0.024741506646971934,
+        "false_positive_rate": 0.7336111111111111,
+        "review_rate": 0.7384783201527134
+      },
+      "post_authentication_anomaly": {
+        "threshold": 45.51,
+        "validation_n": 3675,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.02040816326530612
+      },
+      "web_exploitation": {
+        "threshold": 60.6,
+        "validation_n": 3660,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.01639344262295082
+      },
+      "unknown_suspicious": {
+        "threshold": 14.15,
+        "validation_n": 3661,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 0.20065789473684212,
+        "false_positive_rate": 0.0675,
+        "review_rate": 0.08303742146954383
+      },
+      "benign": {
+        "threshold": 101.0,
+        "validation_n": 0,
+        "target_recall": 0.95,
+        "recall": 0.0,
+        "review_rate": 0.0,
+        "false_positive_rate": 0.0
+      }
+    },
+    "hybrid_min_review_thresholds": {
+      "reconnaissance": {
+        "threshold": 76.76,
+        "validation_n": 3681,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.022004889975550123
+      },
+      "credential_abuse": {
+        "threshold": 67.03,
+        "validation_n": 3656,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.015317286652078774
+      },
+      "automation": {
+        "threshold": 3.97,
+        "validation_n": 3667,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 0.019539224263633713,
+        "false_positive_rate": 0.9338888888888889,
+        "review_rate": 0.9350968093809654
+      },
+      "post_authentication_anomaly": {
+        "threshold": 53.63,
+        "validation_n": 3675,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.02040816326530612
+      },
+      "web_exploitation": {
+        "threshold": 35.51,
+        "validation_n": 3660,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.01639344262295082
+      },
+      "unknown_suspicious": {
+        "threshold": 19.25,
+        "validation_n": 3661,
+        "target_recall": 0.95,
+        "recall": 1.0,
+        "precision": 1.0,
+        "false_positive_rate": 0.0,
+        "review_rate": 0.01666211417645452
+      },
+      "benign": {
+        "threshold": 101.0,
+        "validation_n": 0,
+        "target_recall": 0.95,
+        "recall": 0.0,
+        "review_rate": 0.0,
+        "false_positive_rate": 0.0
+      }
+    }
+  },
+  "provider_metrics": {
+    "inference_count": 15,
+    "cache_hits": 7985,
+    "cache_hit_rate": 0.998125,
+    "context_bytes": 33623,
+    "cached_decisions": 15
+  },
+  "prefilter_metrics": {
+    "inference_count": 9,
+    "cache_hits": 4051,
+    "cache_hit_rate": 0.9977832512315271,
+    "context_bytes": 20182,
+    "cached_decisions": 9,
+    "prefilter_skips": 3940
+  },
+  "inference_latency_p50_ms": 955.8974159999707,
+  "inference_latency_p95_ms": 1198.7115000001722,
+  "uncached_inferences": 15,
+  "wall_seconds": 24.4878467919998,
+  "effective_windows_per_second": 326.6926679161357,
+  "context_bytes": 33623,
+  "token_count": null,
+  "token_count_note": "local-jev System-One endpoint does not expose token usage",
+  "dataset_generator_version": 2,
+  "dataset_fingerprint": "ccb14ea84e0da633f8b4c07678d66884b57910d12fa1ac13db41c1580898fa43",
+  "dataset_seed": 20261001,
+  "dataset_behavior_windows": 20000
+}

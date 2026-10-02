@@ -1,0 +1,250 @@
+{
+  "model": "llm-qwen3-4b",
+  "calibration_split": "validation",
+  "maximum_validation_fpr": 0.05,
+  "jev_thresholds": {
+    "reconnaissance": {
+      "threshold": 70.75,
+      "validation_n": 3833,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008609444299504304
+    },
+    "credential_abuse": {
+      "threshold": 89.37,
+      "validation_n": 3824,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.006276150627615063
+    },
+    "automation": {
+      "threshold": 100.000001,
+      "validation_n": 3828,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.0
+    },
+    "post_authentication_anomaly": {
+      "threshold": 45.51,
+      "validation_n": 3841,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.010674303566779484
+    },
+    "web_exploitation": {
+      "threshold": 60.6,
+      "validation_n": 3834,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008868022952529996
+    },
+    "unknown_suspicious": {
+      "threshold": 100.000001,
+      "validation_n": 3840,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.0
+    },
+    "benign": {
+      "threshold": 101.0,
+      "validation_n": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.0
+    }
+  },
+  "hybrid_thresholds": {
+    "reconnaissance": {
+      "threshold": 76.76,
+      "validation_n": 3833,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008609444299504304
+    },
+    "credential_abuse": {
+      "threshold": 67.03,
+      "validation_n": 3824,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.006276150627615063
+    },
+    "automation": {
+      "threshold": 100.000001,
+      "validation_n": 3828,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.0
+    },
+    "post_authentication_anomaly": {
+      "threshold": 53.63,
+      "validation_n": 3841,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.010674303566779484
+    },
+    "web_exploitation": {
+      "threshold": 35.51,
+      "validation_n": 3834,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008868022952529996
+    },
+    "unknown_suspicious": {
+      "threshold": 19.25,
+      "validation_n": 3840,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.010416666666666666
+    },
+    "benign": {
+      "threshold": 101.0,
+      "validation_n": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.0
+    }
+  },
+  "target_recall": 0.95,
+  "jev_min_review_thresholds": {
+    "reconnaissance": {
+      "threshold": 70.75,
+      "validation_n": 3833,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008609444299504304
+    },
+    "credential_abuse": {
+      "threshold": 89.37,
+      "validation_n": 3824,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.006276150627615063
+    },
+    "automation": {
+      "threshold": 7.92,
+      "validation_n": 3828,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 0.0099361249112846,
+      "false_positive_rate": 0.7342105263157894,
+      "review_rate": 0.7361546499477534
+    },
+    "post_authentication_anomaly": {
+      "threshold": 45.51,
+      "validation_n": 3841,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.010674303566779484
+    },
+    "web_exploitation": {
+      "threshold": 60.6,
+      "validation_n": 3834,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008868022952529996
+    },
+    "unknown_suspicious": {
+      "threshold": 14.15,
+      "validation_n": 3840,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 0.136986301369863,
+      "false_positive_rate": 0.06631578947368422,
+      "review_rate": 0.07604166666666666
+    },
+    "benign": {
+      "threshold": 101.0,
+      "validation_n": 0,
+      "target_recall": 0.95,
+      "recall": 0.0,
+      "review_rate": 0.0,
+      "false_positive_rate": 0.0
+    }
+  },
+  "hybrid_min_review_thresholds": {
+    "reconnaissance": {
+      "threshold": 76.76,
+      "validation_n": 3833,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008609444299504304
+    },
+    "credential_abuse": {
+      "threshold": 67.03,
+      "validation_n": 3824,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.006276150627615063
+    },
+    "automation": {
+      "threshold": 3.97,
+      "validation_n": 3828,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 0.007825600894354388,
+      "false_positive_rate": 0.9342105263157895,
+      "review_rate": 0.9346917450365726
+    },
+    "post_authentication_anomaly": {
+      "threshold": 53.63,
+      "validation_n": 3841,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.010674303566779484
+    },
+    "web_exploitation": {
+      "threshold": 35.51,
+      "validation_n": 3834,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.008868022952529996
+    },
+    "unknown_suspicious": {
+      "threshold": 19.25,
+      "validation_n": 3840,
+      "target_recall": 0.95,
+      "recall": 1.0,
+      "precision": 1.0,
+      "false_positive_rate": 0.0,
+      "review_rate": 0.010416666666666666
+    },
+    "benign": {
+      "threshold": 101.0,
+      "validation_n": 0,
+      "target_recall": 0.95,
+      "recall": 0.0,
+      "review_rate": 0.0,
+      "false_positive_rate": 0.0
+    }
+  }
+}

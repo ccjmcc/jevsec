@@ -1,19 +1,61 @@
-# Self-hosted AI Security Decision Engine
+# JevSec — Security Decision Engine
 
-Self-hosted behavior-based detection and AI-assisted triage for Nginx and web application logs. Once model weights are downloaded, local inference traffic stays on the machine; no event data is sent to a vendor. The first release is detection and shadow mode only. It never blocks traffic, isolates systems, or scans targets.
+**Self-hosted AI security decision engine for behavior-based web threat triage.** Local System-One inference, vendor-neutral provider interface, explainable evidence and shadow mode. It detects suspicious behavior that static rules may miss; it does not claim to prevent zero-days, replace a WAF, or guarantee unknown-attack detection.
+
+![JevSec dashboard with synthetic demo events](docs/media/dashboard.jpg)
+
+This UI capture uses synthetic events and the explicit mock provider to illustrate the layout. Follow the [demo script](docs/launch/demo-script.md) to reproduce it.
 
 ## Quick start
 
-Requirements: Python 3.12, `uv`, `git`, and (for local AI) the separate [local-jev](https://github.com/amithgc/local-jev) service. Start local-jev natively on Apple Silicon to use Metal/MPS; Docker is not used for the model. The demo script clones/installs local-jev to a sibling `.local-jev` checkout when it is not already installed, then starts it locally. The first launch downloads the selected model weights.
+完整安装、运行模式、配置、Docker、基准复现与故障诊断见[使用指南](docs/USAGE.md)。
+
+Requirements: Python 3.12, `uv`, Git. The demo starts the separate [local-jev](https://github.com/amithgc/local-jev) service natively on Apple Silicon when needed, then imports safe synthetic Nginx traffic.
 
 ```sh
-uv sync --all-extras
-./scripts/run_demo.sh
+git clone <repository-url>
+cd jevsec
+./scripts/demo.sh
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The dashboard labels Rules, Jev and Hybrid values separately. Set `LOCAL_JEV_MODEL` before running the demo to choose a model. `nli-deberta-large` is the default for a modest-memory demo; `llm-qwen3-4b` and `llm-qwen3.5-4b` need substantially more RAM and disk.
+Open <http://127.0.0.1:8000>. First local-model launch downloads Qwen3-4B weights. This release supports one model identifier: `llm-qwen3-4b` (Qwen3-4B-Instruct-2507). Dashboard: change Rules/Jev/Hybrid view, inspect structured Attack Stories and evidence, then submit TP/FP/Unsure feedback stored locally.
 
-To run without local-jev, set `SDE_DECISION_PROVIDER=mock`; this is only a deterministic demo fallback and is not a model benchmark. For real local inference, set `SDE_DECISION_PROVIDER=local_jev` and `LOCAL_JEV_BASE_URL`.
+For a deterministic UI-only smoke test without model service: `SDE_DECISION_PROVIDER=mock ./scripts/demo.sh` (not an ML result).
+
+## Benchmark
+
+The public benchmark uses fixed-seed, entity-disjoint synthetic data at 1%, 5%, and 10% malicious prevalence. It compares the deterministic project rules, Qwen3-4B, calibrated Qwen3-4B, Hybrid and prefilter→Qwen3. Thresholds are fitted from validation only. Full metrics, model revision, failure analysis, operating points and reproduction command: [v2 benchmark](reports/BENCHMARK_V2.md).
+
+OWASP CRS 4.29.0 is also evaluated as a request-level mature WAF reference; methodology and limitations are in [the WAF comparison report](reports/WAF_COMPARISON.md). JevSec is behavioral triage in shadow mode and does not replace or bypass a WAF.
+
+## Demo and shadow mode
+
+```sh
+./scripts/demo.sh
+security-engine shadow --nginx /var/log/nginx/access.log
+```
+
+Shadow mode tails Nginx logs, handles truncation/replacement rotation and prints structured findings. It never blocks requests, changes network configuration or bans an address. Start with a copied or read-only log on a real system.
+
+## How it works
+
+Nginx/JSONL → privacy-aware normalization → IP/session/pseudonymous-user windows and historical baselines → explainable rules + local Jev → validation-fitted category thresholds → BENIGN / REVIEW / HIGH_RISK / UNCERTAIN → local SQLite and dashboard.
+
+Cookies, Authorization values, passwords, API keys and unknown JSON keys are not retained. User and session identifiers are one-way pseudonymized. Jev receives whitelisted aggregate features, never raw request paths, user-agent strings or referer values. See [architecture](ARCHITECTURE.md), [privacy](PRIVACY.md), [security](SECURITY.md), and [threat model](THREAT_MODEL.md).
+
+## Docker
+
+On Linux, configure credentials and provider URL in a local `.env` (`cp .env.example .env` and replace the password), then `docker compose up --build`. The container runs the engine and keeps SQLite in a named volume; local-jev remains a separately hosted provider. Docker Desktop on macOS does not provide the host Apple GPU/MPS to the Linux container. Use native local-jev on M5.
+
+## Limitations
+
+- v0.2 benchmark and demo scenarios are synthetic; the benchmark is not a production prevalence estimate.
+- This is security triage, not a WAF replacement or a guarantee against unknown vulnerabilities.
+- Dashboard feedback is local and recorded for later calibration review; it does not silently change thresholds.
+- Basic authentication is required on non-loopback binds; use TLS at a trusted reverse proxy. Loopback-only development can run without authentication.
+- Source IP remains identifying data in SQLite. Configure filesystem access, retention and backups for your environment.
+
+See [release notes](CHANGELOG.md), [failure analysis](reports/FAILURE_ANALYSIS.md), and [contribution guide](CONTRIBUTING.md).
 
 ## CLI
 
@@ -23,7 +65,7 @@ To run without local-jev, set `SDE_DECISION_PROVIDER=mock`; this is only a deter
 .venv/bin/security-engine ingest /var/log/nginx/access.log --format nginx --follow
 .venv/bin/security-engine ingest sample.jsonl --format jsonl
 .venv/bin/security-engine generate-dataset
-.venv/bin/security-engine benchmark --provider local_jev --model nli-deberta-large
+.venv/bin/security-engine benchmark --provider local_jev --model llm-qwen3-4b
 ```
 
 The supported Nginx format is Combined Log Format with optional trailing request time. JSONL is whitelisted into the shared event schema; unknown fields such as cookies, passwords, Authorization, API keys and secrets are discarded. Provide a pre-hashed pseudonymous `session_hash` if session grouping is needed.
@@ -36,14 +78,14 @@ Generate a fixed-seed dataset (10,000+ events), then run a held-out evaluation:
 
 ```sh
 .venv/bin/security-engine generate-dataset --out datasets/generated --entities 1200 --seed 20261001
-.venv/bin/security-engine benchmark --data datasets/generated --reports reports --provider local_jev --model nli-deberta-large --sample-limit 120
+.venv/bin/security-engine benchmark --data datasets/generated --reports reports --provider local_jev --model llm-qwen3-4b --sample-limit 120
 ```
 
-The local model evaluation samples up to the requested number from the test partition, stratified by category, because single-window model inference can be slow. Reports include sample count and synthetic-data caveats. Thresholds are config defaults and are not fit on the test partition. Never interpret these synthetic metrics as production effectiveness.
+The legacy CLI benchmark samples up to the requested number from the test partition. The public benchmark evaluates every held-out behavior window. Thresholds are selected on validation only. Never interpret synthetic metrics as production effectiveness.
 
 ## Configuration
 
-Environment variables: `SDE_DATABASE`, `SDE_DECISION_PROVIDER` (`mock` or `local_jev`), `LOCAL_JEV_BASE_URL`, `LOCAL_JEV_MODEL`, `SDE_DECISION_TIMEOUT`, `SDE_MODE` (`hybrid`, `rules_only`, `jev_only`), `SDE_ALERT_THRESHOLD`, `SDE_HIGH_RISK_THRESHOLD`, `SDE_LOW_CONFIDENCE_THRESHOLD`.
+Environment variables: `SDE_DATABASE`, `SDE_DECISION_PROVIDER` (`mock` or `local_jev`), `LOCAL_JEV_BASE_URL`, `LOCAL_JEV_MODEL` (fixed to `llm-qwen3-4b`), `SDE_DECISION_TIMEOUT`, `SDE_MODE` (`hybrid`, `rules_only`, `jev_only`), `SDE_ALERT_THRESHOLD`, `SDE_HIGH_RISK_THRESHOLD`, `SDE_LOW_CONFIDENCE_THRESHOLD`.
 
 ## Deployment
 
@@ -56,4 +98,4 @@ No automated enforcement. No external target activity is performed. See [SECURIT
 
 ## Project state
 
-This is v0.1 and an engineering prototype. Authentication, multi-tenant access control, enterprise retention controls, advanced log rotation support and production calibration remain outside the first release. Actual benchmark results and limitations are in [reports/BENCHMARK.md](reports/BENCHMARK.md). Release steps are in [RELEASE_COMMANDS.md](RELEASE_COMMANDS.md).
+This is v0.2.0 and an engineering prototype. Authentication is HTTP Basic for non-loopback deployment; multi-tenant access control and enterprise retention controls remain out of scope. Current corrected Qwen3 and OWASP CRS comparison results are in [reports/BENCHMARK_V2.md](reports/BENCHMARK_V2.md) and [reports/WAF_COMPARISON.md](reports/WAF_COMPARISON.md). Release steps are in [RELEASE_COMMANDS.md](RELEASE_COMMANDS.md).

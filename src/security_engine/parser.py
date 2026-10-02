@@ -37,6 +37,7 @@ def parse_nginx_line(line: str) -> SecurityEvent:
         referer="" if data["referer"] == "-" else data["referer"],
         user_agent="" if data["agent"] == "-" else data["agent"],
         request_time=float(data["request_time"] or 0),
+        user_id=None if data["user"] == "-" else data["user"],
         auth_result=auth_result,
         source="nginx",
     )
@@ -51,7 +52,7 @@ def parse_json_line(line: str) -> SecurityEvent:
         raise ValueError("JSON event must be an object")
     # Deliberately whitelist fields. Credentials, cookies and unknown raw keys are discarded.
     allowed = {"timestamp", "source_ip", "method", "path", "status", "bytes_sent", "user_agent",
-               "referer", "host", "request_time", "request_id", "session_hash", "auth_result"}
+               "referer", "host", "request_time", "request_id", "session_hash", "user_id", "auth_result"}
     data = {key: value for key, value in raw.items() if key in allowed}
     if "timestamp" in data and isinstance(data["timestamp"], str):
         try:

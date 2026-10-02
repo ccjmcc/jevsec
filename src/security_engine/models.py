@@ -25,6 +25,7 @@ class SecurityEvent(BaseModel):
     request_time: float = 0.0
     request_id: str = ""
     session_hash: str | None = None
+    user_id: str | None = None
     auth_result: Literal["success", "failure", "unknown"] = "unknown"
     source: Literal["nginx", "jsonl", "synthetic", "api"] = "jsonl"
 
@@ -43,7 +44,7 @@ class SecurityEvent(BaseModel):
         allowed = {"GET", "POST", "HEAD", "OPTIONS", "PUT", "PATCH", "DELETE", "TRACE", "CONNECT"}
         return method if method in allowed else "OTHER"
 
-    @field_validator("session_hash", "request_id", mode="before")
+    @field_validator("session_hash", "request_id", "user_id", mode="before")
     @classmethod
     def pseudonymize_identifiers(cls, value):
         if value in (None, ""):
@@ -101,7 +102,7 @@ class JevDecision(BaseModel):
 
 class Assessment(BaseModel):
     entity: str
-    entity_type: Literal["source_ip", "session"]
+    entity_type: Literal["source_ip", "session", "user"]
     window: str
     started_at: datetime
     ended_at: datetime
@@ -112,7 +113,7 @@ class Assessment(BaseModel):
     jev: JevDecision | None = None
     jev_risk: float | None = None
     hybrid_risk: float
-    disposition: Literal["BENIGN", "SUSPICIOUS", "HIGH_RISK", "UNCERTAIN"]
+    disposition: Literal["BENIGN", "REVIEW", "SUSPICIOUS", "HIGH_RISK", "UNCERTAIN"]
     category: str
     confidence: float
     mode: Literal["rules_only", "jev_only", "hybrid"]

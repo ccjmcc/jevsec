@@ -10,6 +10,10 @@ def test_nginx_auth_outcome_inference():
     success=parse_nginx_line('192.0.2.10 - - [01/Oct/2026:10:11:13 +0800] "POST /login HTTP/1.1" 200 30 "-" "Test"')
     assert failed.auth_result=='failure' and success.auth_result=='success'
 
+def test_nginx_user_id_is_pseudonymized():
+    event=parse_nginx_line('192.0.2.10 - alice [01/Oct/2026:10:11:12 +0800] "GET /home HTTP/1.1" 200 30 "-" "Test"')
+    assert event.user_id.startswith('sde1_') and 'alice' not in event.model_dump_json()
+
 def test_json_whitelists_sensitive_fields():
     e=parse_json_line('{"source_ip":"192.0.2.1","method":"CUSTOM attacker-text","path":"/login?token=secret","referer":"https://user:pass@example.test/start?session=secret","request_id":"token-secret","session_hash":"cookie-secret","cookie":"session-secret","password":"x","status":200}')
     assert e.source_ip=='192.0.2.1'

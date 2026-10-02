@@ -1,0 +1,577 @@
+{
+  "blocking_paranoia_level": 1,
+  "image_digest": "owasp/modsecurity-crs@sha256:ac057618e2c42e8192c000cb918ae1dff11446cf12beb6b23d4fa0065b0fe5be",
+  "image_ref": "owasp/modsecurity-crs@sha256:ac057618e2c42e8192c000cb918ae1dff11446cf12beb6b23d4fa0065b0fe5be",
+  "inbound_anomaly_threshold": 5,
+  "methodology": {
+    "behavior_requests_are_safe": true,
+    "qwen_policy": "calibrated_hybrid_review from the same held-out entity windows",
+    "request_level_waf_window_rule": "flag behavior window when any of its 12 requests receives HTTP 403",
+    "request_signature_deduplication": "send each exact method/path/user-agent signature once, then project its result to every matching window; default CRS config is request-stateless and no rate-limit plugin is enabled",
+    "warning": "Behavior corpus labels represent rate/auth/path patterns; benign-looking requests intentionally contain no exploit payloads. WAF signature positives are a separate local-only control set."
+  },
+  "paranoia_level": 1,
+  "payload_control_summary": {
+    "attack_signature_fixtures": 4,
+    "attack_signature_fixtures_blocked": 4,
+    "benign_controls": 1,
+    "benign_controls_blocked": 0,
+    "latency_p50_ms": 1.3016670000070008
+  },
+  "payload_controls": [
+    {
+      "blocked": false,
+      "expected_attack_signature": false,
+      "fixture": "benign_search",
+      "latency_ms": 4.207,
+      "status": 200
+    },
+    {
+      "blocked": true,
+      "expected_attack_signature": true,
+      "fixture": "sqli_boolean_probe",
+      "latency_ms": 1.849,
+      "status": 403
+    },
+    {
+      "blocked": true,
+      "expected_attack_signature": true,
+      "fixture": "xss_probe",
+      "latency_ms": 1.302,
+      "status": 403
+    },
+    {
+      "blocked": true,
+      "expected_attack_signature": true,
+      "fixture": "path_traversal_probe",
+      "latency_ms": 1.135,
+      "status": 403
+    },
+    {
+      "blocked": true,
+      "expected_attack_signature": true,
+      "fixture": "command_injection_probe",
+      "latency_ms": 1.266,
+      "status": 403
+    }
+  ],
+  "runs": [
+    {
+      "behavior_http_requests": 48000,
+      "dataset_behavior_windows": 20000,
+      "dataset_fingerprint": "3f84bd9fd2c3c2efa00a3816f2c2c6b2b0f4111887fdb91a5957900cc80b5e8d",
+      "dataset_seed": 20261001,
+      "per_scenario": {
+        "admin_batch_operation": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 264
+        },
+        "api_polling": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 263
+        },
+        "automated_bot": {
+          "positive": 9,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 9
+        },
+        "cdn": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 263
+        },
+        "ci_cd": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 264
+        },
+        "credential_abuse": {
+          "positive": 5,
+          "qwen3_reviewed": 5,
+          "waf_blocked": 0,
+          "windows": 5
+        },
+        "development_scan": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 263
+        },
+        "enterprise_proxy": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 265
+        },
+        "health_check": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 266
+        },
+        "high_volume_api": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 261
+        },
+        "mobile_retry": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 262
+        },
+        "monitoring_system": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 265
+        },
+        "normal_crawler": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 266
+        },
+        "ordinary_browse": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 266
+        },
+        "possible_web_exploitation": {
+          "positive": 6,
+          "qwen3_reviewed": 6,
+          "waf_blocked": 0,
+          "windows": 6
+        },
+        "reconnaissance": {
+          "positive": 7,
+          "qwen3_reviewed": 7,
+          "waf_blocked": 0,
+          "windows": 7
+        },
+        "search_bot": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 265
+        },
+        "slow_login_failures": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 264
+        },
+        "spa_404": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 263
+        },
+        "suspicious_post_authentication": {
+          "positive": 7,
+          "qwen3_reviewed": 7,
+          "waf_blocked": 0,
+          "windows": 7
+        },
+        "unknown_suspicious": {
+          "positive": 6,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 6
+        }
+      },
+      "prevalence": "1pct",
+      "qwen3_calibrated_hybrid": {
+        "f1": 0.7692307692307693,
+        "fn": 15,
+        "fnr": 0.375,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 4000,
+        "precision": 1.0,
+        "recall": 0.625,
+        "review_rate": 0.00625,
+        "tn": 3960,
+        "tp": 25
+      },
+      "test_attack_prevalence": 0.01,
+      "test_windows": 4000,
+      "waf": {
+        "f1": 0.0,
+        "fn": 40,
+        "fnr": 1.0,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 4000,
+        "precision": null,
+        "recall": 0.0,
+        "review_rate": 0.0,
+        "tn": 3960,
+        "tp": 0
+      },
+      "waf_http_requests_sent": 56,
+      "waf_http_statuses": {
+        "200": 56
+      },
+      "waf_request_latency_ms": {
+        "p50": 25.6191454996042,
+        "p95": 51.41049999929237
+      },
+      "waf_unique_signatures": 56
+    },
+    {
+      "behavior_http_requests": 48000,
+      "dataset_behavior_windows": 20000,
+      "dataset_fingerprint": "c5faf75c1acb5d0c5e345bd5f0603b7c39689f180a563808c08e1973e906691c",
+      "dataset_seed": 20261001,
+      "per_scenario": {
+        "admin_batch_operation": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 250
+        },
+        "api_polling": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 254
+        },
+        "automated_bot": {
+          "positive": 31,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 31
+        },
+        "cdn": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 256
+        },
+        "ci_cd": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 246
+        },
+        "credential_abuse": {
+          "positive": 40,
+          "qwen3_reviewed": 40,
+          "waf_blocked": 0,
+          "windows": 40
+        },
+        "development_scan": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 253
+        },
+        "enterprise_proxy": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 250
+        },
+        "health_check": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 253
+        },
+        "high_volume_api": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 259
+        },
+        "mobile_retry": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 257
+        },
+        "monitoring_system": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 256
+        },
+        "normal_crawler": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 254
+        },
+        "ordinary_browse": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 257
+        },
+        "possible_web_exploitation": {
+          "positive": 28,
+          "qwen3_reviewed": 28,
+          "waf_blocked": 0,
+          "windows": 28
+        },
+        "reconnaissance": {
+          "positive": 39,
+          "qwen3_reviewed": 39,
+          "waf_blocked": 0,
+          "windows": 39
+        },
+        "search_bot": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 255
+        },
+        "slow_login_failures": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 249
+        },
+        "spa_404": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 251
+        },
+        "suspicious_post_authentication": {
+          "positive": 32,
+          "qwen3_reviewed": 32,
+          "waf_blocked": 0,
+          "windows": 32
+        },
+        "unknown_suspicious": {
+          "positive": 30,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 30
+        }
+      },
+      "prevalence": "5pct",
+      "qwen3_calibrated_hybrid": {
+        "f1": 0.8200589970501475,
+        "fn": 61,
+        "fnr": 0.305,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 4000,
+        "precision": 1.0,
+        "recall": 0.695,
+        "review_rate": 0.03475,
+        "tn": 3800,
+        "tp": 139
+      },
+      "test_attack_prevalence": 0.05,
+      "test_windows": 4000,
+      "waf": {
+        "f1": 0.0,
+        "fn": 200,
+        "fnr": 1.0,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 4000,
+        "precision": null,
+        "recall": 0.0,
+        "review_rate": 0.0,
+        "tn": 3800,
+        "tp": 0
+      },
+      "waf_http_requests_sent": 56,
+      "waf_http_statuses": {
+        "200": 56
+      },
+      "waf_request_latency_ms": {
+        "p50": 20.937624999987747,
+        "p95": 43.58683400005248
+      },
+      "waf_unique_signatures": 56
+    },
+    {
+      "behavior_http_requests": 48000,
+      "dataset_behavior_windows": 20000,
+      "dataset_fingerprint": "ccb14ea84e0da633f8b4c07678d66884b57910d12fa1ac13db41c1580898fa43",
+      "dataset_seed": 20261001,
+      "per_scenario": {
+        "admin_batch_operation": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 248
+        },
+        "api_polling": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 240
+        },
+        "automated_bot": {
+          "positive": 55,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 55
+        },
+        "cdn": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 228
+        },
+        "ci_cd": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 232
+        },
+        "credential_abuse": {
+          "positive": 66,
+          "qwen3_reviewed": 66,
+          "waf_blocked": 0,
+          "windows": 66
+        },
+        "development_scan": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 237
+        },
+        "enterprise_proxy": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 242
+        },
+        "health_check": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 242
+        },
+        "high_volume_api": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 230
+        },
+        "mobile_retry": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 240
+        },
+        "monitoring_system": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 243
+        },
+        "normal_crawler": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 238
+        },
+        "ordinary_browse": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 244
+        },
+        "possible_web_exploitation": {
+          "positive": 76,
+          "qwen3_reviewed": 76,
+          "waf_blocked": 0,
+          "windows": 76
+        },
+        "reconnaissance": {
+          "positive": 64,
+          "qwen3_reviewed": 64,
+          "waf_blocked": 0,
+          "windows": 64
+        },
+        "search_bot": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 247
+        },
+        "slow_login_failures": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 247
+        },
+        "spa_404": {
+          "positive": 0,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 242
+        },
+        "suspicious_post_authentication": {
+          "positive": 69,
+          "qwen3_reviewed": 69,
+          "waf_blocked": 0,
+          "windows": 69
+        },
+        "unknown_suspicious": {
+          "positive": 70,
+          "qwen3_reviewed": 0,
+          "waf_blocked": 0,
+          "windows": 70
+        }
+      },
+      "prevalence": "10pct",
+      "qwen3_calibrated_hybrid": {
+        "f1": 0.8148148148148148,
+        "fn": 125,
+        "fnr": 0.3125,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 4000,
+        "precision": 1.0,
+        "recall": 0.6875,
+        "review_rate": 0.06875,
+        "tn": 3600,
+        "tp": 275
+      },
+      "test_attack_prevalence": 0.1,
+      "test_windows": 4000,
+      "waf": {
+        "f1": 0.0,
+        "fn": 400,
+        "fnr": 1.0,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 4000,
+        "precision": null,
+        "recall": 0.0,
+        "review_rate": 0.0,
+        "tn": 3600,
+        "tp": 0
+      },
+      "waf_http_requests_sent": 56,
+      "waf_http_statuses": {
+        "200": 56
+      },
+      "waf_request_latency_ms": {
+        "p50": 22.0112289998724,
+        "p95": 47.5546249999752
+      },
+      "waf_unique_signatures": 56
+    }
+  ],
+  "waf_image": "owasp/modsecurity-crs:4.29.0-nginx-202609301109"
+}

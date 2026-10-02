@@ -1,6 +1,6 @@
 # Robustness check
 
-Ran 3 localhost-only synthetic log cases using `nli-deberta-large`. The records had ordinary, unusual-symbol, and prompt-like User-Agent variants.
+Ran 3 localhost-only synthetic log cases using `llm-qwen3-4b`. The records had ordinary, unusual-symbol, and prompt-like User-Agent variants.
 
 - Aggregate feature objects identical: **True**
 - Typed model decisions identical (excluding latency): **True**

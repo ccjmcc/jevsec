@@ -25,6 +25,11 @@ def evaluate_rules(f: dict[str, object]) -> tuple[list[RuleMatch], int]:
         add("login_failure_burst", "Unusually many failed authentication attempts", "high", 30, failures=failures)
     if bool(f.get("auth_failure_then_success")):
         add("failure_then_success", "Authentication failure followed by success", "high", 28)
+    if (float(f.get("deviation_from_baseline", 0)) >= 3 or float(f.get("new_path_ratio", 0)) >= .8
+        or (bool(f.get("unusual_hour")) and bool(f.get("new_user_agent")) and int(f.get("request_count", 0)) >= 3)):
+        add("historical_behavior_deviation", "Request behavior deviates from this entity's local history", "medium", 15,
+            deviation=round(float(f.get("deviation_from_baseline", 0)), 2),
+            new_path_ratio=round(float(f.get("new_path_ratio", 0)), 2), unusual_hour=bool(f.get("unusual_hour")))
     sensitive = int(f.get("sensitive_unique_path_count", f.get("sensitive_path_count", 0)))
     if sensitive >= 3:
         add("sensitive_path_sweep", "Several distinct sensitive paths accessed in one window", "high", 30, unique_sensitive_paths=sensitive)
