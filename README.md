@@ -1,20 +1,58 @@
-# JevSec — Security Decision Engine
+# JevSec
 
 **Self-hosted behavioral security triage powered by local Qwen3-4B.**
 
-> Traditional WAFs inspect requests. **JevSec analyzes behavior across requests.**
+[![Status](https://img.shields.io/badge/status-research%20alpha-f59e0b)](docs/ROADMAP.md)
+[![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB)](pyproject.toml)
+[![Model](https://img.shields.io/badge/local%20model-Qwen3--4B-8b5cf6)](https://github.com/QwenLM/Qwen3)
+[![Mode](https://img.shields.io/badge/deployment-shadow%20mode-2563eb)](SECURITY.md)
+[![License](https://img.shields.io/badge/license-MIT-16a34a)](LICENSE)
+
+> **Your WAF sees requests. JevSec sees behavior.**
+
+[Project page](https://www.easytool.me/jevsec/) · [Technical write-up](https://www.ccjmcc.xyz/posts/jevsec-local-ai-security-triage/) · [Benchmark](#benchmark) · [Architecture](ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
 
 ![JevSec benchmark](docs/media/benchmark.svg)
 
-## Latest semi-real benchmark
+## Why JevSec exists
 
-Deterministic held-out CSIC replay sample:
+Request-level WAFs are strong at matching exploit syntax and known request patterns. JevSec is aimed at the layer above that: **short sequences of activity that become suspicious only when viewed together**.
+
+JevSec groups web activity into behavior windows, combines deterministic evidence with local-model decisions, and produces structured findings for human review.
+
+```text
+Nginx / JSONL
+      │
+      ▼
+privacy-aware normalization
+      │
+      ▼
+behavior windows
+      │
+      ├── deterministic rules
+      │
+      └── local Qwen3-4B
+               │
+               ▼
+BENIGN / REVIEW / HIGH_RISK / UNCERTAIN
+               │
+               ▼
+       local SQLite + dashboard
+```
+
+**JevSec complements a WAF. It does not replace WAF enforcement.**
+
+## Benchmark
+
+### Semi-real CSIC replay
+
+Deterministic held-out sample:
 
 - **250 test windows**
 - **145 anomalous / 105 normal**
-- Local **Qwen3-4B**
-- Validation-only calibration
-- Shadow-mode review, not automated blocking
+- local **Qwen3-4B**
+- thresholds selected from validation only
+- shadow-mode review, not automated blocking
 
 | System | Recall | Precision | Observed FPR | Anomalies detected |
 |---|---:|---:|---:|---:|
@@ -22,45 +60,44 @@ Deterministic held-out CSIC replay sample:
 | Qwen3-4B | 23.45% | 97.14% | 0.95% | 34 / 145 |
 | **JevSec Hybrid** | **26.90%** | **97.50%** | **0.95%** | **39 / 145** |
 
-### Headline result
+**Headline:** Hybrid detected **39 vs 30 anomalous windows** compared with the static-rule baseline — **30% more detections** — while adding **1 false review among 105 normal windows**.
 
-**JevSec Hybrid detected 39 anomalous windows vs 30 for the static-rule baseline — 30% more detections — while adding one false review among 105 normal windows.**
+For windows containing only one anomalous request mixed with normal requests, recall moved from **16.67% to 25.00%** (**+50% relative** on that small subgroup).
 
-On the low-intensity subgroup with only one anomalous request mixed into a window, recall improved from **16.67% to 25.00%** (**+50% relative**).
+### What the benchmark does not prove
 
-### Important limitation
+Current risk-score AUROC remains weak:
 
-Current risk-score ranking is still weak:
+- Static rules: **0.522**
+- Qwen3-4B: **0.473**
+- Hybrid: **0.454**
 
-- Static rules AUROC: **0.522**
-- Qwen3-4B AUROC: **0.473**
-- Hybrid AUROC: **0.454**
+So the result is evidence of **incremental review coverage**, not evidence that the model globally ranks risk well, detects unknown vulnerabilities in production, or outperforms a mature WAF at request-level exploit signatures.
 
-This benchmark shows incremental review coverage, **not** production effectiveness, unknown-vulnerability detection, or superiority over a mature WAF.
+See [public benchmark v2](reports/BENCHMARK_V2.md), [OWASP CRS comparison](reports/WAF_COMPARISON.md), and [failure analysis](reports/FAILURE_ANALYSIS.md).
 
-## Why JevSec
+## JevSec vs a traditional WAF
 
-A request-level WAF and a behavioral review engine solve different problems.
+| | Traditional request-level WAF | JevSec |
+|---|---|---|
+| Primary view | Individual HTTP request | Activity across a behavior window |
+| Best fit | Request syntax / signatures / exploit indicators | Sequence, frequency, context, rule-model disagreement |
+| Output | Allow / block / anomaly score | Review-oriented risk finding |
+| Model | Usually not required | Local Qwen3-4B |
+| Deployment | Enforcement layer | **Shadow / triage layer** |
+| Relationship | Keep it | Add JevSec beside it |
 
-JevSec groups activity into short behavior windows, combines deterministic evidence with local-model decisions, and produces structured outcomes for human review.
+The OWASP CRS report in this repository intentionally treats the two systems as complementary rather than as interchangeable products.
 
-Typical flow:
+## Key properties
 
-```
-Nginx / JSONL
-    ↓
-privacy-aware normalization
-    ↓
-behavior windows
-    ↓
-rules + local Qwen3-4B
-    ↓
-BENIGN / REVIEW / HIGH_RISK / UNCERTAIN
-    ↓
-local SQLite + dashboard
-```
-
-JevSec is designed to **complement** an existing WAF, not replace it.
+- **Self-hosted** — core application and decision workflow stay local.
+- **Local AI** — current supported model is Qwen3-4B through local-jev.
+- **Privacy-aware context** — the model receives whitelisted aggregate features rather than raw request paths, cookies, Authorization values, or user-agent strings.
+- **Behavior windows** — aggregate by source IP and optional pseudonymous session identity.
+- **Explainable evidence** — rule/model evidence is kept with each finding.
+- **Shadow mode first** — no automatic firewall changes, bans, or request blocking.
+- **Reproducible evaluation** — fixed seeds, validation-only threshold fitting, held-out test reporting.
 
 ## Quick start
 
@@ -74,13 +111,13 @@ cd jevsec
 
 Open:
 
-```
+```text
 http://127.0.0.1:8000
 ```
 
 The first local-model launch downloads Qwen3-4B weights.
 
-For a deterministic UI-only smoke test:
+UI-only smoke test:
 
 ```bash
 SDE_DECISION_PROVIDER=mock ./scripts/demo.sh
@@ -92,26 +129,7 @@ SDE_DECISION_PROVIDER=mock ./scripts/demo.sh
 security-engine shadow --nginx /var/log/nginx/access.log
 ```
 
-Shadow mode tails logs and emits structured findings. It does not block requests, change network configuration, or ban addresses.
-
-## Benchmark and WAF comparison
-
-- [Public benchmark v2](reports/BENCHMARK_V2.md)
-- [OWASP CRS comparison](reports/WAF_COMPARISON.md)
-- [Failure analysis](reports/FAILURE_ANALYSIS.md)
-
-The OWASP CRS comparison uses a different controlled dataset and should not be directly ranked against the CSIC replay results.
-
-## Privacy
-
-Cookies, Authorization values, passwords, API keys and unknown JSON keys are not retained. User/session identifiers are pseudonymized before aggregation. The local decision layer receives whitelisted aggregate features rather than raw request paths or user-agent strings.
-
-See:
-
-- [Architecture](ARCHITECTURE.md)
-- [Privacy](PRIVACY.md)
-- [Security](SECURITY.md)
-- [Threat model](THREAT_MODEL.md)
+Shadow mode tails logs and emits structured findings. It does **not** block requests, change network configuration, or ban addresses.
 
 ## Docker
 
@@ -122,28 +140,41 @@ cp .env.example .env
 docker compose up --build
 ```
 
-On Apple Silicon, run local-jev natively for Apple GPU acceleration.
+On Apple Silicon, run local-jev natively if you want Apple GPU acceleration.
 
-## Project state
+## Privacy and security
 
-JevSec is an **engineering prototype / research alpha**.
+JevSec is intentionally conservative about what reaches the model:
 
-Current strengths:
+- cookies are not retained;
+- Authorization values are not retained;
+- passwords and API keys are discarded;
+- unknown JSON fields are discarded;
+- user/session identifiers are pseudonymized before aggregation;
+- model outputs are advisory.
 
-- self-hosted;
-- local Qwen3-4B;
-- reproducible benchmarks;
-- behavior-window aggregation;
-- shadow-mode operation;
-- explainable rule/model evidence.
+Read [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), and [THREAT_MODEL.md](THREAT_MODEL.md).
 
-Current limitations:
+## Project status
 
-- semi-real and synthetic benchmarks are not production estimates;
-- current model risk ranking remains weak;
-- real-world shadow-mode validation is still required;
-- JevSec does not replace WAF enforcement.
+**Research Alpha / shadow-mode engineering prototype.**
 
-## License and contribution
+The next milestones are real-world shadow validation, better sequence context, stronger risk ranking, and tighter WAF-signal fusion. See the [roadmap](docs/ROADMAP.md).
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), [CHANGELOG.md](CHANGELOG.md), and repository license information.
+## Documentation
+
+- [Architecture](ARCHITECTURE.md)
+- [Usage](docs/USAGE.md)
+- [Benchmark index](BENCHMARK.md)
+- [OWASP CRS comparison](reports/WAF_COMPARISON.md)
+- [Failure analysis](reports/FAILURE_ANALYSIS.md)
+- [Privacy](PRIVACY.md)
+- [Security policy](SECURITY.md)
+- [Threat model](THREAT_MODEL.md)
+- [Press kit](docs/PRESS_KIT.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Contributing](CONTRIBUTING.md)
+
+## License
+
+MIT. See [LICENSE](LICENSE).
